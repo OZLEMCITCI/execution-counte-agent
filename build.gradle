@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'application'
+}
+
+
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+configurations {
+	agentDeps
+}
+dependencies {
+	implementation 'net.bytebuddy:byte-buddy:1.12.8'
+	implementation 'org.ow2.asm:asm:9.2'
+}
+
+
+
+task createAgentJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+	manifest {
+		attributes 'Premain-Class': 'com.example.executioncounteragent.ExecutionCounterAgent'
+	}
+	from sourceSets.main.output
+	configurations = [project.configurations.runtimeClasspath]
+	archiveFileName = "ExecutionCounterAgent.jar"
+	destinationDirectory = file("$buildDir/libs")
+}
+application {application {
+	mainClassName = 'TestAppRunner'
+}
+
+	task runApp(type: JavaExec) {
+		classpath sourceSets.main.runtimeClasspath
+		main = application.mainClassName
+	}
+}
+
+
+
+
+
+
+
+
+
