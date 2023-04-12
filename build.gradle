@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
-	id 'application'
+	id 'java' // Java plugin for compiling Java code
+	id 'com.github.johnrengelman.shadow' version '7.1.2' // Shadow plugin for creating a fat JAR
+	id 'application' // Application plugin for running Java applications
 }
 
 
@@ -13,16 +13,19 @@ sourceCompatibility = '17'
 repositories {
 	mavenCentral()
 }
+
+// Define a configuration for agent dependencies
 configurations {
 	agentDeps
 }
 dependencies {
-	implementation 'net.bytebuddy:byte-buddy:1.12.8'
-	implementation 'org.ow2.asm:asm:9.2'
+	implementation 'net.bytebuddy:byte-buddy:1.12.8' // Byte Buddy library for runtime code generation
+	implementation 'org.ow2.asm:asm:9.2' //ASM library for bytecode manipulation
 }
 
 
 
+// Create a task to generate the Java agent JAR using the Shadow plugin
 task createAgentJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
 	manifest {
 		attributes 'Premain-Class': 'com.example.executioncounteragent.ExecutionCounterAgent'
@@ -32,10 +35,14 @@ task createAgentJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shado
 	archiveFileName = "ExecutionCounterAgent.jar"
 	destinationDirectory = file("$buildDir/libs")
 }
+
+// Configure the application plugin
 application {application {
 	mainClassName = 'TestAppRunner'
 }
 
+
+// Create a task to run the application
 	task runApp(type: JavaExec) {
 		classpath sourceSets.main.runtimeClasspath
 		main = application.mainClassName
